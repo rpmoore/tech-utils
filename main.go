@@ -1,7 +1,11 @@
 package main
 
 import (
+	"embed"
+	"html/template"
+	"io"
 	"log/slog"
+	"net/http"
 	"os"
 
 	"tech-utils/config"
@@ -9,6 +13,20 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
+
+//go:embed templates/*.html
+var templatesFS embed.FS
+
+//go:embed static/*
+var staticFS embed.FS
+
+type Template struct {
+	templates *template.Template
+}
+
+func (t *Template) Render(w io.Writer, name string, data any, c echo.Context) error {
+	return t.templates.ExecuteTemplate(w, name, data)
+}
 
 func main() {
 	cfg := config.Load()
@@ -20,6 +38,9 @@ func main() {
 
 	e := echo.New()
 	e.HideBanner = true
+
+	tmpl := template.Must(template.ParseFS(templatesFS, "templates/*.html"))
+	e.Renderer = &Template{templates: tmpl}
 
 	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 		LogStatus:   true,
@@ -46,6 +67,8 @@ func main() {
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: cfg.AllowedOrigins,
 	}))
+
+	e.GET("/static/*", echo.WrapHandler(http.FileServer(http.FS(staticFS))))
 
 	e.GET("/health", func(c echo.Context) error {
 		return c.String(200, "OK")

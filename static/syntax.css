@@ -1,0 +1,50 @@
+.syntax-string { color: #22863a; }
+.syntax-number { color: #005cc5; }
+.syntax-boolean { color: #d73a49; }
+.syntax-null { color: #6f42c1; }
+.syntax-key { color: #032f62; }
+
+.result-container {
+    margin-top: 1rem;
+}
+
+.uuid-list {
+    font-family: monospace;
+    list-style: none;
+    padding: 0;
+}
+
+.uuid-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--pico-muted-border-color);
+}
+
+.copy-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+pre.output {
+    background: var(--pico-code-background-color);
+    padding: 1rem;
+    border-radius: 0.25rem;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.error {
+    color: var(--pico-del-color);
+    padding: 1rem;
+    border: 1px solid var(--pico-del-color);
+    border-radius: 0.25rem;
+}
+
+.formula {
+    font-style: italic;
+    color: var(--pico-muted-color);
+    margin-top: 0.5rem;
+}
