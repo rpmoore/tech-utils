@@ -1,0 +1,34 @@
+{{template "layout.html" .}}
+
+{{define "content"}}
+<h1>Format Converter</h1>
+<p>Convert between JSON, YAML, and TOML formats.</p>
+
+<form hx-post="/convert/transform" hx-target="#result" hx-swap="innerHTML">
+    <label>
+        Input
+        <textarea name="input" rows="10" placeholder="Paste JSON, YAML, or TOML here"></textarea>
+    </label>
+    <div class="grid">
+        <label>
+            From
+            <select name="from">
+                <option value="json">JSON</option>
+                <option value="yaml">YAML</option>
+                <option value="toml">TOML</option>
+            </select>
+        </label>
+        <label>
+            To
+            <select name="to">
+                <option value="yaml">YAML</option>
+                <option value="json">JSON</option>
+                <option value="toml">TOML</option>
+            </select>
+        </label>
+    </div>
+    <button type="submit">Convert</button>
+</form>
+
+<div id="result" class="result-container"></div>
+{{end}}

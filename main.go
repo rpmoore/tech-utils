@@ -82,6 +82,10 @@ func main() {
 	e.GET("/json", jsonHandler.Index)
 	e.POST("/json/format", jsonHandler.Format)
 
+	convertHandler := handlers.NewConvertHandler()
+	e.GET("/convert", convertHandler.Index)
+	e.POST("/convert/transform", convertHandler.Transform)
+
 	e.GET("/health", func(c echo.Context) error {
 		return c.String(200, "OK")
 	})
