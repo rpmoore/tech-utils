@@ -1,76 +1,113 @@
-{{define "content"}}
-<h1>Unit Converter</h1>
-<p>Convert between different units of measurement.</p>
+{{define "units.html"}}
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}} - Dev Tools</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="/static/syntax.css">
+    <script src="https://unpkg.com/htmx.org@2"></script>
+</head>
+<body>
+    <nav class="container">
+        <ul>
+            <li><strong><a href="/">Dev Tools</a></strong></li>
+        </ul>
+        <ul>
+            <li><a href="/uuid">UUID</a></li>
+            <li><a href="/json">JSON</a></li>
+            <li><a href="/convert">Convert</a></li>
+            <li><a href="/timezone">Timezone</a></li>
+            <li><a href="/units">Units</a></li>
+        </ul>
+    </nav>
+    <main class="container">
+        <h1>Unit Converter</h1>
+        <p>Convert between different units of measurement.</p>
 
-<form hx-post="/units/convert" hx-target="#result" hx-swap="innerHTML">
-    <label>
-        Value
-        <input type="number" name="value" step="any" required placeholder="Enter a number">
-    </label>
-    <label>
-        Category
-        <select name="category" id="category" onchange="updateUnits()">
+        <form hx-post="/units/convert" hx-target="#result" hx-swap="innerHTML">
+            <label>
+                Value
+                <input type="number" name="value" step="any" required placeholder="Enter a number">
+            </label>
+            <label>
+                Category
+                <select name="category" id="category" onchange="updateUnits()">
+                    {{range .Categories}}
+                    <option value="{{.Name}}">{{.Name}}</option>
+                    {{end}}
+                </select>
+            </label>
+            <div class="grid">
+                <label>
+                    From
+                    <select name="from" id="from-unit">
+                        {{range (index .Categories 0).Units}}
+                        <option value="{{.Code}}">{{.Name}} ({{.Code}})</option>
+                        {{end}}
+                    </select>
+                </label>
+                <label>
+                    To
+                    <select name="to" id="to-unit">
+                        {{range (index .Categories 0).Units}}
+                        <option value="{{.Code}}">{{.Name}} ({{.Code}})</option>
+                        {{end}}
+                    </select>
+                </label>
+            </div>
+            <button type="submit">Convert</button>
+        </form>
+
+        <div id="result" class="result-container"></div>
+    </main>
+    <footer class="container">
+        <small>Developer utility tools. No data stored.</small>
+    </footer>
+    <script>
+        function copyToClipboard(text, btn) {
+            navigator.clipboard.writeText(text).then(function() {
+                var original = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(function() { btn.textContent = original; }, 1500);
+            });
+        }
+
+        var unitData = {
             {{range .Categories}}
-            <option value="{{.Name}}">{{.Name}}</option>
+            "{{.Name}}": [
+                {{range .Units}}
+                {code: "{{.Code}}", name: "{{.Name}}"},
+                {{end}}
+            ],
             {{end}}
-        </select>
-    </label>
-    <div class="grid">
-        <label>
-            From
-            <select name="from" id="from-unit">
-                {{range (index .Categories 0).Units}}
-                <option value="{{.Code}}">{{.Name}} ({{.Code}})</option>
-                {{end}}
-            </select>
-        </label>
-        <label>
-            To
-            <select name="to" id="to-unit">
-                {{range (index .Categories 0).Units}}
-                <option value="{{.Code}}">{{.Name}} ({{.Code}})</option>
-                {{end}}
-            </select>
-        </label>
-    </div>
-    <button type="submit">Convert</button>
-</form>
+        };
 
-<div id="result" class="result-container"></div>
+        function updateUnits() {
+            var category = document.getElementById('category').value;
+            var units = unitData[category] || [];
+            var fromSelect = document.getElementById('from-unit');
+            var toSelect = document.getElementById('to-unit');
 
-<script>
-var unitData = {
-    {{range .Categories}}
-    "{{.Name}}": [
-        {{range .Units}}
-        {code: "{{.Code}}", name: "{{.Name}}"},
-        {{end}}
-    ],
-    {{end}}
-};
+            // Clear existing options safely
+            fromSelect.textContent = '';
+            toSelect.textContent = '';
 
-function updateUnits() {
-    var category = document.getElementById('category').value;
-    var units = unitData[category] || [];
-    var fromSelect = document.getElementById('from-unit');
-    var toSelect = document.getElementById('to-unit');
+            // Add new options using DOM methods
+            units.forEach(function(u) {
+                var option1 = document.createElement('option');
+                option1.value = u.code;
+                option1.textContent = u.name + ' (' + u.code + ')';
+                fromSelect.appendChild(option1);
 
-    // Clear existing options safely
-    fromSelect.textContent = '';
-    toSelect.textContent = '';
-
-    // Add new options using DOM methods
-    units.forEach(function(u) {
-        var option1 = document.createElement('option');
-        option1.value = u.code;
-        option1.textContent = u.name + ' (' + u.code + ')';
-        fromSelect.appendChild(option1);
-
-        var option2 = document.createElement('option');
-        option2.value = u.code;
-        option2.textContent = u.name + ' (' + u.code + ')';
-        toSelect.appendChild(option2);
-    });
-}
-</script>
+                var option2 = document.createElement('option');
+                option2.value = u.code;
+                option2.textContent = u.name + ' (' + u.code + ')';
+                toSelect.appendChild(option2);
+            });
+        }
+    </script>
+</body>
+</html>
 {{end}}

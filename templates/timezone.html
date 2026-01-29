@@ -1,34 +1,71 @@
-{{template "layout.html" .}}
+{{define "timezone.html"}}
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}} - Dev Tools</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="/static/syntax.css">
+    <script src="https://unpkg.com/htmx.org@2"></script>
+</head>
+<body>
+    <nav class="container">
+        <ul>
+            <li><strong><a href="/">Dev Tools</a></strong></li>
+        </ul>
+        <ul>
+            <li><a href="/uuid">UUID</a></li>
+            <li><a href="/json">JSON</a></li>
+            <li><a href="/convert">Convert</a></li>
+            <li><a href="/timezone">Timezone</a></li>
+            <li><a href="/units">Units</a></li>
+        </ul>
+    </nav>
+    <main class="container">
+        <h1>Timezone Converter</h1>
+        <p>Convert times between different timezones.</p>
 
-{{define "content"}}
-<h1>Timezone Converter</h1>
-<p>Convert times between different timezones.</p>
+        <form hx-post="/timezone/convert" hx-target="#result" hx-swap="innerHTML">
+            <label>
+                Date/Time
+                <input type="datetime-local" name="datetime" required>
+            </label>
+            <div class="grid">
+                <label>
+                    From Timezone
+                    <select name="from">
+                        {{range .Timezones}}
+                        <option value="{{.}}" {{if eq . "UTC"}}selected{{end}}>{{.}}</option>
+                        {{end}}
+                    </select>
+                </label>
+                <label>
+                    To Timezone
+                    <select name="to">
+                        {{range .Timezones}}
+                        <option value="{{.}}" {{if eq . "America/New_York"}}selected{{end}}>{{.}}</option>
+                        {{end}}
+                    </select>
+                </label>
+            </div>
+            <button type="submit">Convert</button>
+        </form>
 
-<form hx-post="/timezone/convert" hx-target="#result" hx-swap="innerHTML">
-    <label>
-        Date/Time
-        <input type="datetime-local" name="datetime" required>
-    </label>
-    <div class="grid">
-        <label>
-            From Timezone
-            <select name="from">
-                {{range .Timezones}}
-                <option value="{{.}}" {{if eq . "UTC"}}selected{{end}}>{{.}}</option>
-                {{end}}
-            </select>
-        </label>
-        <label>
-            To Timezone
-            <select name="to">
-                {{range .Timezones}}
-                <option value="{{.}}" {{if eq . "America/New_York"}}selected{{end}}>{{.}}</option>
-                {{end}}
-            </select>
-        </label>
-    </div>
-    <button type="submit">Convert</button>
-</form>
-
-<div id="result" class="result-container"></div>
+        <div id="result" class="result-container"></div>
+    </main>
+    <footer class="container">
+        <small>Developer utility tools. No data stored.</small>
+    </footer>
+    <script>
+        function copyToClipboard(text, btn) {
+            navigator.clipboard.writeText(text).then(function() {
+                var original = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(function() { btn.textContent = original; }, 1500);
+            });
+        }
+    </script>
+</body>
+</html>
 {{end}}

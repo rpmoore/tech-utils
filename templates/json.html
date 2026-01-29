@@ -1,24 +1,61 @@
-{{template "layout.html" .}}
+{{define "json.html"}}
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}} - Dev Tools</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="/static/syntax.css">
+    <script src="https://unpkg.com/htmx.org@2"></script>
+</head>
+<body>
+    <nav class="container">
+        <ul>
+            <li><strong><a href="/">Dev Tools</a></strong></li>
+        </ul>
+        <ul>
+            <li><a href="/uuid">UUID</a></li>
+            <li><a href="/json">JSON</a></li>
+            <li><a href="/convert">Convert</a></li>
+            <li><a href="/timezone">Timezone</a></li>
+            <li><a href="/units">Units</a></li>
+        </ul>
+    </nav>
+    <main class="container">
+        <h1>JSON Formatter</h1>
+        <p>Pretty-print and syntax highlight JSON.</p>
 
-{{define "content"}}
-<h1>JSON Formatter</h1>
-<p>Pretty-print and syntax highlight JSON.</p>
+        <form hx-post="/json/format" hx-target="#result" hx-swap="innerHTML">
+            <label>
+                JSON Input
+                <textarea name="input" rows="10" placeholder='{"key": "value"}'></textarea>
+            </label>
+            <label>
+                Indent
+                <select name="indent">
+                    <option value="2">2 spaces</option>
+                    <option value="4">4 spaces</option>
+                    <option value="tab">Tabs</option>
+                </select>
+            </label>
+            <button type="submit">Format</button>
+        </form>
 
-<form hx-post="/json/format" hx-target="#result" hx-swap="innerHTML">
-    <label>
-        JSON Input
-        <textarea name="input" rows="10" placeholder='{"key": "value"}'></textarea>
-    </label>
-    <label>
-        Indent
-        <select name="indent">
-            <option value="2">2 spaces</option>
-            <option value="4">4 spaces</option>
-            <option value="tab">Tabs</option>
-        </select>
-    </label>
-    <button type="submit">Format</button>
-</form>
-
-<div id="result" class="result-container"></div>
+        <div id="result" class="result-container"></div>
+    </main>
+    <footer class="container">
+        <small>Developer utility tools. No data stored.</small>
+    </footer>
+    <script>
+        function copyToClipboard(text, btn) {
+            navigator.clipboard.writeText(text).then(function() {
+                var original = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(function() { btn.textContent = original; }, 1500);
+            });
+        }
+    </script>
+</body>
+</html>
 {{end}}

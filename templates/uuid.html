@@ -1,25 +1,62 @@
-{{template "layout.html" .}}
+{{define "uuid.html"}}
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}} - Dev Tools</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="/static/syntax.css">
+    <script src="https://unpkg.com/htmx.org@2"></script>
+</head>
+<body>
+    <nav class="container">
+        <ul>
+            <li><strong><a href="/">Dev Tools</a></strong></li>
+        </ul>
+        <ul>
+            <li><a href="/uuid">UUID</a></li>
+            <li><a href="/json">JSON</a></li>
+            <li><a href="/convert">Convert</a></li>
+            <li><a href="/timezone">Timezone</a></li>
+            <li><a href="/units">Units</a></li>
+        </ul>
+    </nav>
+    <main class="container">
+        <h1>UUID Generator</h1>
+        <p>Generate random UUIDs (v4) or time-ordered UUIDs (v7).</p>
 
-{{define "content"}}
-<h1>UUID Generator</h1>
-<p>Generate random UUIDs (v4) or time-ordered UUIDs (v7).</p>
+        <form hx-post="/uuid/generate" hx-target="#result" hx-swap="innerHTML">
+            <div class="grid">
+                <label>
+                    Count (1-100)
+                    <input type="number" name="count" value="1" min="1" max="100" required>
+                </label>
+                <label>
+                    Version
+                    <select name="version">
+                        <option value="4">v4 (Random)</option>
+                        <option value="7">v7 (Time-ordered)</option>
+                    </select>
+                </label>
+            </div>
+            <button type="submit">Generate</button>
+        </form>
 
-<form hx-post="/uuid/generate" hx-target="#result" hx-swap="innerHTML">
-    <div class="grid">
-        <label>
-            Count (1-100)
-            <input type="number" name="count" value="1" min="1" max="100" required>
-        </label>
-        <label>
-            Version
-            <select name="version">
-                <option value="4">v4 (Random)</option>
-                <option value="7">v7 (Time-ordered)</option>
-            </select>
-        </label>
-    </div>
-    <button type="submit">Generate</button>
-</form>
-
-<div id="result" class="result-container"></div>
+        <div id="result" class="result-container"></div>
+    </main>
+    <footer class="container">
+        <small>Developer utility tools. No data stored.</small>
+    </footer>
+    <script>
+        function copyToClipboard(text, btn) {
+            navigator.clipboard.writeText(text).then(function() {
+                var original = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(function() { btn.textContent = original; }, 1500);
+            });
+        }
+    </script>
+</body>
+</html>
 {{end}}
