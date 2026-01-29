@@ -57,12 +57,21 @@ func (h *JSONHandler) Format(c echo.Context) error {
 }
 
 func syntaxHighlightJSON(s string) string {
-	s = html.EscapeString(s)
+	// Only escape characters that could cause XSS, but leave quotes intact for JSON display
+	s = strings.ReplaceAll(s, "&", "&amp;")
+	s = strings.ReplaceAll(s, "<", "&lt;")
+	s = strings.ReplaceAll(s, ">", "&gt;")
 
-	// html.EscapeString converts " to &#34; so we need to match that
-	stringRe := regexp.MustCompile(`&#34;([^&]*)&#34;`)
-	s = stringRe.ReplaceAllString(s, `<span class="syntax-string">&#34;$1&#34;</span>`)
+	// Highlight strings first, using a placeholder to protect them
+	stringRe := regexp.MustCompile(`"((?:[^"\\]|\\.)*)"`)
+	var stringMatches []string
+	s = stringRe.ReplaceAllStringFunc(s, func(match string) string {
+		idx := len(stringMatches)
+		stringMatches = append(stringMatches, match)
+		return "___STRING_" + string(rune('A'+idx)) + "___"
+	})
 
+	// Now highlight numbers, booleans, and null (won't match inside strings)
 	numberRe := regexp.MustCompile(`\b(-?\d+\.?\d*)\b`)
 	s = numberRe.ReplaceAllString(s, `<span class="syntax-number">$1</span>`)
 
@@ -71,6 +80,13 @@ func syntaxHighlightJSON(s string) string {
 
 	nullRe := regexp.MustCompile(`\bnull\b`)
 	s = nullRe.ReplaceAllString(s, `<span class="syntax-null">null</span>`)
+
+	// Restore strings with highlighting
+	for idx, str := range stringMatches {
+		placeholder := "___STRING_" + string(rune('A'+idx)) + "___"
+		highlighted := `<span class="syntax-string">` + str + `</span>`
+		s = strings.ReplaceAll(s, placeholder, highlighted)
+	}
 
 	return s
 }
