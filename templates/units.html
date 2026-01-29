@@ -1,0 +1,76 @@
+{{define "content"}}
+<h1>Unit Converter</h1>
+<p>Convert between different units of measurement.</p>
+
+<form hx-post="/units/convert" hx-target="#result" hx-swap="innerHTML">
+    <label>
+        Value
+        <input type="number" name="value" step="any" required placeholder="Enter a number">
+    </label>
+    <label>
+        Category
+        <select name="category" id="category" onchange="updateUnits()">
+            {{range .Categories}}
+            <option value="{{.Name}}">{{.Name}}</option>
+            {{end}}
+        </select>
+    </label>
+    <div class="grid">
+        <label>
+            From
+            <select name="from" id="from-unit">
+                {{range (index .Categories 0).Units}}
+                <option value="{{.Code}}">{{.Name}} ({{.Code}})</option>
+                {{end}}
+            </select>
+        </label>
+        <label>
+            To
+            <select name="to" id="to-unit">
+                {{range (index .Categories 0).Units}}
+                <option value="{{.Code}}">{{.Name}} ({{.Code}})</option>
+                {{end}}
+            </select>
+        </label>
+    </div>
+    <button type="submit">Convert</button>
+</form>
+
+<div id="result" class="result-container"></div>
+
+<script>
+var unitData = {
+    {{range .Categories}}
+    "{{.Name}}": [
+        {{range .Units}}
+        {code: "{{.Code}}", name: "{{.Name}}"},
+        {{end}}
+    ],
+    {{end}}
+};
+
+function updateUnits() {
+    var category = document.getElementById('category').value;
+    var units = unitData[category] || [];
+    var fromSelect = document.getElementById('from-unit');
+    var toSelect = document.getElementById('to-unit');
+
+    // Clear existing options safely
+    fromSelect.textContent = '';
+    toSelect.textContent = '';
+
+    // Add new options using DOM methods
+    units.forEach(function(u) {
+        var option1 = document.createElement('option');
+        option1.value = u.code;
+        option1.textContent = u.name + ' (' + u.code + ')';
+        fromSelect.appendChild(option1);
+
+        var option2 = document.createElement('option');
+        option2.value = u.code;
+        option2.textContent = u.name + ' (' + u.code + ')';
+        toSelect.appendChild(option2);
+    });
+}
+</script>
+{{end}}
