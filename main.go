@@ -9,6 +9,7 @@ import (
 	"os"
 
 	"tech-utils/config"
+	"tech-utils/handlers"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -69,6 +70,9 @@ func main() {
 	}))
 
 	e.GET("/static/*", echo.WrapHandler(http.FileServer(http.FS(staticFS))))
+
+	homeHandler := handlers.NewHomeHandler()
+	e.GET("/", homeHandler.Index)
 
 	e.GET("/health", func(c echo.Context) error {
 		return c.String(200, "OK")

@@ -1,0 +1,18 @@
+{{template "layout.html" .}}
+
+{{define "content"}}
+<h1>Developer Tools</h1>
+<p>Useful utilities for debugging and development.</p>
+
+<div class="grid">
+    {{range .Tools}}
+    <article>
+        <header>{{.Name}}</header>
+        <p>{{.Description}}</p>
+        <footer>
+            <a href="{{.Path}}" role="button">Open</a>
+        </footer>
+    </article>
+    {{end}}
+</div>
+{{end}}
