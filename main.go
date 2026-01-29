@@ -78,6 +78,10 @@ func main() {
 	e.GET("/uuid", uuidHandler.Index)
 	e.POST("/uuid/generate", uuidHandler.Generate)
 
+	jsonHandler := handlers.NewJSONHandler()
+	e.GET("/json", jsonHandler.Index)
+	e.POST("/json/format", jsonHandler.Format)
+
 	e.GET("/health", func(c echo.Context) error {
 		return c.String(200, "OK")
 	})
