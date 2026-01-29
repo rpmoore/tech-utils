@@ -74,6 +74,10 @@ func main() {
 	homeHandler := handlers.NewHomeHandler()
 	e.GET("/", homeHandler.Index)
 
+	uuidHandler := handlers.NewUUIDHandler()
+	e.GET("/uuid", uuidHandler.Index)
+	e.POST("/uuid/generate", uuidHandler.Generate)
+
 	e.GET("/health", func(c echo.Context) error {
 		return c.String(200, "OK")
 	})

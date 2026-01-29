@@ -1,0 +1,25 @@
+{{template "layout.html" .}}
+
+{{define "content"}}
+<h1>UUID Generator</h1>
+<p>Generate random UUIDs (v4) or time-ordered UUIDs (v7).</p>
+
+<form hx-post="/uuid/generate" hx-target="#result" hx-swap="innerHTML">
+    <div class="grid">
+        <label>
+            Count (1-100)
+            <input type="number" name="count" value="1" min="1" max="100" required>
+        </label>
+        <label>
+            Version
+            <select name="version">
+                <option value="4">v4 (Random)</option>
+                <option value="7">v7 (Time-ordered)</option>
+            </select>
+        </label>
+    </div>
+    <button type="submit">Generate</button>
+</form>
+
+<div id="result" class="result-container"></div>
+{{end}}
