@@ -1,0 +1,34 @@
+{{template "layout.html" .}}
+
+{{define "content"}}
+<h1>Timezone Converter</h1>
+<p>Convert times between different timezones.</p>
+
+<form hx-post="/timezone/convert" hx-target="#result" hx-swap="innerHTML">
+    <label>
+        Date/Time
+        <input type="datetime-local" name="datetime" required>
+    </label>
+    <div class="grid">
+        <label>
+            From Timezone
+            <select name="from">
+                {{range .Timezones}}
+                <option value="{{.}}" {{if eq . "UTC"}}selected{{end}}>{{.}}</option>
+                {{end}}
+            </select>
+        </label>
+        <label>
+            To Timezone
+            <select name="to">
+                {{range .Timezones}}
+                <option value="{{.}}" {{if eq . "America/New_York"}}selected{{end}}>{{.}}</option>
+                {{end}}
+            </select>
+        </label>
+    </div>
+    <button type="submit">Convert</button>
+</form>
+
+<div id="result" class="result-container"></div>
+{{end}}

@@ -86,6 +86,10 @@ func main() {
 	e.GET("/convert", convertHandler.Index)
 	e.POST("/convert/transform", convertHandler.Transform)
 
+	timezoneHandler := handlers.NewTimezoneHandler()
+	e.GET("/timezone", timezoneHandler.Index)
+	e.POST("/timezone/convert", timezoneHandler.Convert)
+
 	e.GET("/health", func(c echo.Context) error {
 		return c.String(200, "OK")
 	})
